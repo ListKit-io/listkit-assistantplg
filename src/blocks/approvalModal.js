@@ -97,6 +97,23 @@ function buildApprovalModal({ freeSignups, paidSignups, newMrr, date }) {
           },
         },
       },
+      {
+        type: 'input',
+        block_id: 'listkit2_mrr_block',
+        label: {
+          type: 'plain_text',
+          text: 'Listkit 2.0 MRR ($)',
+        },
+        element: {
+          type: 'number_input',
+          action_id: 'listkit2_mrr_input',
+          is_decimal_allowed: true,
+          placeholder: {
+            type: 'plain_text',
+            text: 'Enter Listkit 2.0 MRR',
+          },
+        },
+      },
     ],
   };
 }
