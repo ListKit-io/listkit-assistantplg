@@ -5,12 +5,12 @@ const FREE_SIGNUP_PATTERN = 'NEW LISTKIT FREE PLAN USER';
 const PAID_SIGNUP_PATTERN = 'NEW LISTKIT SAAS USER';
 
 /**
- * Determines how many days to look back based on the current day.
+ * Determines how many days to look back based on the given day.
  * Monday → 2 days (Saturday + Sunday combined)
  * All other days → 1 day (yesterday)
  */
-function getDaysToLookBack() {
-  const dayOfWeek = new Date().getDay(); // 0=Sun, 1=Mon, ...
+function getDaysToLookBack(asOfDate) {
+  const dayOfWeek = asOfDate.getDay(); // 0=Sun, 1=Mon, ...
   return dayOfWeek === 1 ? 2 : 1;
 }
 
@@ -23,10 +23,9 @@ function getDaysToLookBack() {
  * @param {string} channelId
  * @returns {Promise<Array>}
  */
-async function getReportMessages(client, channelId) {
-  const now = new Date();
-  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const daysBack = getDaysToLookBack();
+async function getReportMessages(client, channelId, asOfDate) {
+  const startOfToday = new Date(asOfDate.getFullYear(), asOfDate.getMonth(), asOfDate.getDate());
+  const daysBack = getDaysToLookBack(asOfDate);
   const startOfPeriod = new Date(startOfToday.getTime() - daysBack * 24 * 60 * 60 * 1000);
   const oldest = (startOfPeriod.getTime() / 1000).toString();
   const latest = (startOfToday.getTime() / 1000).toString();
@@ -60,10 +59,9 @@ function formatDateLabel(d) {
   return `${d.getMonth() + 1}/${d.getDate()}/${String(d.getFullYear()).slice(-2)}`;
 }
 
-function getReportDate() {
-  const now = new Date();
-  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const daysBack = getDaysToLookBack();
+function getReportDate(asOfDate) {
+  const startOfToday = new Date(asOfDate.getFullYear(), asOfDate.getMonth(), asOfDate.getDate());
+  const daysBack = getDaysToLookBack(asOfDate);
 
   if (daysBack === 2) {
     const saturday = new Date(startOfToday.getTime() - 2 * 24 * 60 * 60 * 1000);
@@ -83,10 +81,10 @@ function getReportDate() {
  * @param {string} paidChannelId
  * @returns {Promise<{freeSignups: number, paidSignups: number, newMrr: number, date: string}>}
  */
-async function gatherDailyKPIs(client, freeChannelId, paidChannelId) {
+async function gatherDailyKPIs(client, freeChannelId, paidChannelId, asOfDate = new Date()) {
   const [freeMessages, paidMessages] = await Promise.all([
-    getReportMessages(client, freeChannelId),
-    getReportMessages(client, paidChannelId),
+    getReportMessages(client, freeChannelId, asOfDate),
+    getReportMessages(client, paidChannelId, asOfDate),
   ]);
 
   // Count only bot notifications that match the sign-up pattern
@@ -104,7 +102,7 @@ async function gatherDailyKPIs(client, freeChannelId, paidChannelId) {
     return sum + parseDollarAmount(msg.text);
   }, 0);
 
-  const date = getReportDate();
+  const date = getReportDate(asOfDate);
 
   return {
     freeSignups,

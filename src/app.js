@@ -26,14 +26,25 @@ registerActionHandlers(app);
 registerViewHandlers(app);
 
 // /plg-report slash command — manual trigger fallback
+// Usage: /plg-report            → today's auto report
+//        /plg-report 2026-02-27 → report as if today were that date (e.g. Friday's report)
 app.command('/plg-report', async ({ ack, client, body }) => {
   await ack('Generating report...');
 
   try {
+    let asOfDate = new Date();
+    const text = (body.text || '').trim();
+    if (text) {
+      const [year, month, day] = text.split('-').map(Number);
+      const parsed = new Date(year, month - 1, day);
+      if (!isNaN(parsed)) asOfDate = parsed;
+    }
+
     const kpis = await gatherDailyKPIs(
       client,
       config.channels.free,
-      config.channels.paid
+      config.channels.paid,
+      asOfDate
     );
 
     const dmResult = await client.conversations.open({
