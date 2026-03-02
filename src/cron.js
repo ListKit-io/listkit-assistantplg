@@ -28,7 +28,6 @@ function startCronJob(client) {
           users: config.reportUserId,
         });
 
-        // Send report DM with interactive buttons
         await client.chat.postMessage({
           channel: dmResult.channel.id,
           text: `PLG Daily Report for ${kpis.date} is ready for review.`,
