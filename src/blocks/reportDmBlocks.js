@@ -8,7 +8,7 @@
  * @param {string} kpis.date
  * @returns {Array} Block Kit blocks
  */
-function buildReportDmBlocks({ freeSignups, paidSignups, newMrr, date }) {
+function buildReportDmBlocks({ freeSignups, paidSignups, newMrr, canceledMrr, date }) {
   return [
     {
       type: 'header',
@@ -26,8 +26,9 @@ function buildReportDmBlocks({ freeSignups, paidSignups, newMrr, date }) {
           `• Free plan sign-ups: *${freeSignups}*`,
           `• Paid plan sign-ups: *${paidSignups}*`,
           `• New PLG MRR: *$${newMrr}*`,
+          `• Canceled MRR: *$${canceledMrr}*`,
           '',
-          '_Total PLG MRR needs to be entered manually from ChartMogul._',
+          '_Total Listkit 2.0 Subscribers needs to be entered manually._',
         ].join('\n'),
       },
     },
@@ -42,7 +43,7 @@ function buildReportDmBlocks({ freeSignups, paidSignups, newMrr, date }) {
           },
           style: 'primary',
           action_id: 'review_approve_report',
-          value: JSON.stringify({ freeSignups, paidSignups, newMrr, date }),
+          value: JSON.stringify({ freeSignups, paidSignups, newMrr, canceledMrr, date }),
         },
         {
           type: 'button',

@@ -3,6 +3,7 @@ const { parseDollarAmount } = require('./mrrParser');
 // Patterns that identify actual sign-up notifications vs. chat/noise
 const FREE_SIGNUP_PATTERN = 'NEW LISTKIT FREE PLAN USER';
 const PAID_SIGNUP_PATTERN = 'NEW LISTKIT SAAS USER';
+const CANCELLATION_PATTERN = /\*?Amount:?\*?\s*\$\s?([\d,]+(?:\.\d{1,2})?)/;
 
 /**
  * Determines how many days to look back based on the given day.
@@ -81,10 +82,11 @@ function getReportDate(asOfDate) {
  * @param {string} paidChannelId
  * @returns {Promise<{freeSignups: number, paidSignups: number, newMrr: number, date: string}>}
  */
-async function gatherDailyKPIs(client, freeChannelId, paidChannelId, asOfDate = new Date()) {
-  const [freeMessages, paidMessages] = await Promise.all([
+async function gatherDailyKPIs(client, freeChannelId, paidChannelId, canceledChannelId, asOfDate = new Date()) {
+  const [freeMessages, paidMessages, canceledMessages] = await Promise.all([
     getReportMessages(client, freeChannelId, asOfDate),
     getReportMessages(client, paidChannelId, asOfDate),
+    getReportMessages(client, canceledChannelId, asOfDate),
   ]);
 
   // Count only bot notifications that match the sign-up pattern
@@ -102,12 +104,22 @@ async function gatherDailyKPIs(client, freeChannelId, paidChannelId, asOfDate = 
     return sum + parseDollarAmount(msg.text);
   }, 0);
 
+  // Sum canceled MRR from cancellation messages
+  const canceledMrr = canceledMessages.reduce((sum, msg) => {
+    const match = msg.text && msg.text.match(CANCELLATION_PATTERN);
+    if (match) {
+      return sum + parseFloat(match[1].replace(/,/g, ''));
+    }
+    return sum;
+  }, 0);
+
   const date = getReportDate(asOfDate);
 
   return {
     freeSignups,
     paidSignups,
     newMrr: Math.round(newMrr * 100) / 100,
+    canceledMrr: Math.round(canceledMrr * 100) / 100,
     date,
   };
 }

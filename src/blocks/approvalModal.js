@@ -10,7 +10,7 @@
  * @param {string} kpis.date
  * @returns {object} Slack modal view
  */
-function buildApprovalModal({ freeSignups, paidSignups, newMrr, date }) {
+function buildApprovalModal({ freeSignups, paidSignups, newMrr, canceledMrr, date }) {
   return {
     type: 'modal',
     callback_id: 'approve_report_modal',
@@ -82,18 +82,32 @@ function buildApprovalModal({ freeSignups, paidSignups, newMrr, date }) {
       },
       {
         type: 'input',
-        block_id: 'total_mrr_block',
+        block_id: 'canceled_mrr_block',
         label: {
           type: 'plain_text',
-          text: 'Total PLG MRR ($) — from ChartMogul',
+          text: 'Canceled MRR ($)',
         },
         element: {
           type: 'number_input',
-          action_id: 'total_mrr_input',
+          action_id: 'canceled_mrr_input',
           is_decimal_allowed: true,
+          initial_value: String(canceledMrr),
+        },
+      },
+      {
+        type: 'input',
+        block_id: 'total_subscribers_block',
+        label: {
+          type: 'plain_text',
+          text: 'Total Listkit 2.0 Subscribers',
+        },
+        element: {
+          type: 'number_input',
+          action_id: 'total_subscribers_input',
+          is_decimal_allowed: false,
           placeholder: {
             type: 'plain_text',
-            text: 'Enter total MRR from ChartMogul',
+            text: 'Enter total Listkit 2.0 subscribers',
           },
         },
       },

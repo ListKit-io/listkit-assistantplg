@@ -44,6 +44,7 @@ app.command('/plg-report', async ({ ack, client, body }) => {
       client,
       config.channels.free,
       config.channels.paid,
+      config.channels.canceled,
       asOfDate
     );
 
