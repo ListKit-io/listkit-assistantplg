@@ -8,6 +8,7 @@ const config = {
   channels: {
     free: process.env.FREE_CHANNEL_ID,
     paid: process.env.PAID_CHANNEL_ID,
+    canceled: process.env.CANCELED_CHANNEL_ID,
   },
   reportUserId: process.env.REPORT_USER_ID,
   cron: {
@@ -22,6 +23,7 @@ const required = [
   'SLACK_SIGNING_SECRET',
   'FREE_CHANNEL_ID',
   'PAID_CHANNEL_ID',
+  'CANCELED_CHANNEL_ID',
   'REPORT_USER_ID',
 ];
 
