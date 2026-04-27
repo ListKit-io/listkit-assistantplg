@@ -21,7 +21,6 @@ const client = new WebClient(process.env.SLACK_BOT_TOKEN);
 (async () => {
   const kpis = await gatherDailyKPIs(
     client,
-    process.env.FREE_CHANNEL_ID,
     process.env.PAID_CHANNEL_ID,
     process.env.CANCELED_CHANNEL_ID,
     asOfDate

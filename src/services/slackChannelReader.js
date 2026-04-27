@@ -1,7 +1,6 @@
 const { parseDollarAmount } = require('./mrrParser');
 
 // Patterns that identify actual sign-up notifications vs. chat/noise
-const FREE_SIGNUP_PATTERN = 'NEW LISTKIT FREE PLAN USER';
 const PAID_SIGNUP_PATTERN = 'NEW LISTKIT SAAS USER';
 const CANCELLATION_PATTERN = /\*?Amount:?\*?\s*\$\s?([\d,]+(?:\.\d{1,2})?)/;
 
@@ -78,21 +77,15 @@ function getReportDate(asOfDate) {
  * Gathers all auto-calculable KPIs for the daily report.
  *
  * @param {import('@slack/web-api').WebClient} client
- * @param {string} freeChannelId
  * @param {string} paidChannelId
- * @returns {Promise<{freeSignups: number, paidSignups: number, newMrr: number, date: string}>}
+ * @param {string} canceledChannelId
+ * @returns {Promise<{paidSignups: number, newMrr: number, canceledMrr: number, date: string}>}
  */
-async function gatherDailyKPIs(client, freeChannelId, paidChannelId, canceledChannelId, asOfDate = new Date()) {
-  const [freeMessages, paidMessages, canceledMessages] = await Promise.all([
-    getReportMessages(client, freeChannelId, asOfDate),
+async function gatherDailyKPIs(client, paidChannelId, canceledChannelId, asOfDate = new Date()) {
+  const [paidMessages, canceledMessages] = await Promise.all([
     getReportMessages(client, paidChannelId, asOfDate),
     getReportMessages(client, canceledChannelId, asOfDate),
   ]);
-
-  // Count only bot notifications that match the sign-up pattern
-  const freeSignups = freeMessages.filter(
-    (msg) => msg.text && msg.text.includes(FREE_SIGNUP_PATTERN)
-  ).length;
 
   const paidSignupMessages = paidMessages.filter(
     (msg) => msg.text && msg.text.includes(PAID_SIGNUP_PATTERN)
@@ -116,7 +109,6 @@ async function gatherDailyKPIs(client, freeChannelId, paidChannelId, canceledCha
   const date = getReportDate(asOfDate);
 
   return {
-    freeSignups,
     paidSignups,
     newMrr: Math.round(newMrr * 100) / 100,
     canceledMrr: Math.round(canceledMrr * 100) / 100,

@@ -1,16 +1,14 @@
 /**
  * Builds the modal view for reviewing and approving the report.
- * First 3 fields are pre-filled from auto-calculated values.
- * Total MRR is left empty for manual entry from ChartMogul.
  *
  * @param {object} kpis
- * @param {number} kpis.freeSignups
  * @param {number} kpis.paidSignups
  * @param {number} kpis.newMrr
+ * @param {number} kpis.canceledMrr
  * @param {string} kpis.date
  * @returns {object} Slack modal view
  */
-function buildApprovalModal({ freeSignups, paidSignups, newMrr, canceledMrr, date }) {
+function buildApprovalModal({ paidSignups, newMrr, canceledMrr, date }) {
   return {
     type: 'modal',
     callback_id: 'approve_report_modal',
@@ -37,20 +35,6 @@ function buildApprovalModal({ freeSignups, paidSignups, newMrr, canceledMrr, dat
       },
       {
         type: 'divider',
-      },
-      {
-        type: 'input',
-        block_id: 'free_signups_block',
-        label: {
-          type: 'plain_text',
-          text: 'New free plan sign-ups',
-        },
-        element: {
-          type: 'number_input',
-          action_id: 'free_signups_input',
-          is_decimal_allowed: false,
-          initial_value: String(freeSignups),
-        },
       },
       {
         type: 'input',
