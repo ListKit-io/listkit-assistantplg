@@ -6,7 +6,6 @@ function registerViewHandlers(app) {
     await ack();
 
     const values = view.state.values;
-    const freeSignups = parseInt(values.free_signups_block.free_signups_input.value, 10);
     const paidSignups = parseInt(values.paid_signups_block.paid_signups_input.value, 10);
     const newMrr = parseFloat(values.new_mrr_block.new_mrr_input.value);
     const canceledMrr = parseFloat(values.canceled_mrr_block.canceled_mrr_input.value);
@@ -14,7 +13,7 @@ function registerViewHandlers(app) {
     const listkit2Mrr = parseFloat(values.listkit2_mrr_block.listkit2_mrr_input.value);
     const { date } = JSON.parse(view.private_metadata);
 
-    const reportText = formatReport({ freeSignups, paidSignups, newMrr, canceledMrr, totalSubscribers, listkit2Mrr, date });
+    const reportText = formatReport({ paidSignups, newMrr, canceledMrr, totalSubscribers, listkit2Mrr, date });
 
     // Send the final report as a DM for the user to copy-paste
     const dmResult = await client.conversations.open({

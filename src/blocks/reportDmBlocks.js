@@ -2,13 +2,13 @@
  * Builds Block Kit blocks for the DM report message.
  *
  * @param {object} kpis
- * @param {number} kpis.freeSignups
  * @param {number} kpis.paidSignups
  * @param {number} kpis.newMrr
+ * @param {number} kpis.canceledMrr
  * @param {string} kpis.date
  * @returns {Array} Block Kit blocks
  */
-function buildReportDmBlocks({ freeSignups, paidSignups, newMrr, canceledMrr, date }) {
+function buildReportDmBlocks({ paidSignups, newMrr, canceledMrr, date }) {
   return [
     {
       type: 'header',
@@ -23,7 +23,6 @@ function buildReportDmBlocks({ freeSignups, paidSignups, newMrr, canceledMrr, da
         type: 'mrkdwn',
         text: [
           '*Auto-calculated values:*',
-          `• Free plan sign-ups: *${freeSignups}*`,
           `• Paid plan sign-ups: *${paidSignups}*`,
           `• New PLG MRR: *$${newMrr}*`,
           `• Canceled MRR: *$${canceledMrr}*`,
@@ -43,7 +42,7 @@ function buildReportDmBlocks({ freeSignups, paidSignups, newMrr, canceledMrr, da
           },
           style: 'primary',
           action_id: 'review_approve_report',
-          value: JSON.stringify({ freeSignups, paidSignups, newMrr, canceledMrr, date }),
+          value: JSON.stringify({ paidSignups, newMrr, canceledMrr, date }),
         },
         {
           type: 'button',

@@ -17,7 +17,6 @@ function startCronJob(client) {
       try {
         const kpis = await gatherDailyKPIs(
           client,
-          config.channels.free,
           config.channels.paid,
           config.channels.canceled
         );
