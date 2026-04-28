@@ -1,7 +1,8 @@
-const { parseDollarAmount } = require('./mrrParser');
-
 // Patterns that identify actual sign-up notifications vs. chat/noise
 const PAID_SIGNUP_PATTERN = 'NEW LISTKIT SAAS USER';
+// Match "Total revenue: $X" specifically — signup messages also contain a per-unit
+// "Revenue: $X" line, so a generic "$" sweep would double-count.
+const TOTAL_REVENUE_PATTERN = /\*?Total revenue:?\*?\s*\$\s?([\d,]+(?:\.\d{1,2})?)/i;
 const CANCELLATION_PATTERN = /\*?Amount:?\*?\s*\$\s?([\d,]+(?:\.\d{1,2})?)/;
 
 /**
@@ -92,9 +93,10 @@ async function gatherDailyKPIs(client, paidChannelId, canceledChannelId, asOfDat
   );
   const paidSignups = paidSignupMessages.length;
 
-  // Sum the "Revenue: $X" from paid sign-up messages only
+  // Sum "Total revenue: $X" from paid sign-up messages
   const newMrr = paidSignupMessages.reduce((sum, msg) => {
-    return sum + parseDollarAmount(msg.text);
+    const match = msg.text && msg.text.match(TOTAL_REVENUE_PATTERN);
+    return match ? sum + parseFloat(match[1].replace(/,/g, '')) : sum;
   }, 0);
 
   // Sum canceled MRR from cancellation messages
