@@ -11,6 +11,9 @@
   "author": "",
   "license": "ISC",
   "type": "commonjs",
+  "engines": {
+    "node": ">=22.23.4"
+  },
   "dependencies": {
     "@slack/bolt": "^4.6.0",
     "dotenv": "^17.3.1",
